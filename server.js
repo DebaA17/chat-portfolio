@@ -4,7 +4,6 @@ const fetch = require('node-fetch');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Owner info
 const aboutMe = {
     name: "Debasis",
     bio: "Full Stack Developer passionate about building scalable web applications.",

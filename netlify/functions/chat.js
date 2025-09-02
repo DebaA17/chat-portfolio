@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const aboutMe = {
     name: "Debasis",
     bio: "Full Stack Developer passionate about building scalable web applications.",
-    skills: ["JavaScript", "Node.js", "React", "HTML", "CSS", "Python"],
+    skills: ["JavaScript", "Node.js", "React", "HTML", "CSS", "Python", "Bash", "VAPT", "Bug bounty"],
     projects: [
         { name: "Chatbot", description: "A domain-specific chatbot using Gemini API." },
         { name: "Portfolio", description: "Personal portfolio website." }
