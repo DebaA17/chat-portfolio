@@ -1,4 +1,37 @@
 const fetch = require('node-fetch');
+const BAD_PROMPT_KEYWORDS = [
+    // 18+ / explicit
+    'sex', 'porn', 'nude', 'xxx', 'adult', 'erotic', 'nsfw', 'explicit', 'naked', 'boobs', 'genital', 'penis', 'vagina', 'cum', 'orgasm', 'masturbate', 'rape', 'incest', 'fetish', 'bdsm', 'hentai',
+    // Hate/violence
+    'kill', 'murder', 'terrorist', 'bomb', 'attack', 'racist', 'hate', 'suicide', 'self-harm', 'abuse', 'bully', 'violence', 'shoot', 'stab', 'assault', 'torture',
+    // XSS/code injection
+    '<script', 'onerror', 'onload', 'javascript:', 'alert(', 'document.cookie', 'eval(', 'base64,', 'iframe', 'srcdoc', 'img src', 'svg on', 'fetch(', 'XMLHttpRequest',
+    // Unethical
+    'hack', 'phish', 'scam', 'cheat', 'steal', 'exploit', 'malware', 'virus', 'keylogger', 'ddos', 'ransomware', 'crack', 'pirate', 'illegal', 'drugs', 'weed', 'cocaine', 'heroin', 'meth', 'lsd', 'ecstasy',
+];
+
+const BLOCK_DURATION_MS = 60 * 60 * 1000; // 1 hour
+const blockedIPs = {};
+
+function getIP(event) {
+    // Try Netlify headers, fallback to remote IP
+    return event.headers['x-forwarded-for']?.split(',')[0]?.trim() || event.headers['client-ip'] || event.headers['x-real-ip'] || event.headers['cf-connecting-ip'] || event.headers['fastly-client-ip'] || event.headers['true-client-ip'] || event.headers['x-cluster-client-ip'] || event.headers['x-forwarded'] || event.headers['forwarded-for'] || event.headers['forwarded'] || event.requestContext?.identity?.sourceIp || 'unknown';
+}
+
+function isBadPrompt(question) {
+    const q = question.toLowerCase();
+    return BAD_PROMPT_KEYWORDS.some(k => q.includes(k));
+}
+
+function sanitize(str) {
+    // Basic HTML entity encoding
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 
 const aboutMe = {
     name: "Debasis",
@@ -74,15 +107,35 @@ exports.handler = async (event, context) => {
 
     try {
         const { question } = JSON.parse(event.body);
+        const ip = getIP(event);
+
+        // Check if IP is blocked
+        if (blockedIPs[ip] && Date.now() < blockedIPs[ip]) {
+            return {
+                statusCode: 403,
+                headers,
+                body: JSON.stringify({ error: 'You have been blocked for submitting unethical or unsafe prompts. Try again later.' })
+            };
+        }
+
+        // Check for bad prompt
+        if (isBadPrompt(question)) {
+            blockedIPs[ip] = Date.now() + BLOCK_DURATION_MS;
+            return {
+                statusCode: 403,
+                headers,
+                body: JSON.stringify({ error: 'Your prompt was blocked due to unsafe or unethical content. You are blocked for 1 hour.' })
+            };
+        }
+
         let answer = '';
-        
         if (isAboutOwner(question)) {
-            answer = `Name: ${aboutMe.name}<br>Bio: ${aboutMe.bio}<br>Skills: ${aboutMe.skills.join(', ')}<br>Projects:<br>` +
-                aboutMe.projects.map(p => `- ${p.name}: ${p.description}`).join('<br>');
+            answer = `Name: ${sanitize(aboutMe.name)}<br>Bio: ${sanitize(aboutMe.bio)}<br>Skills: ${sanitize(aboutMe.skills.join(', '))}<br>Projects:<br>` +
+                aboutMe.projects.map(p => `- ${sanitize(p.name)}: ${sanitize(p.description)}`).join('<br>');
         } else {
             answer = await askGemini(question);
+            answer = sanitize(answer);
         }
-        
         return {
             statusCode: 200,
             headers,

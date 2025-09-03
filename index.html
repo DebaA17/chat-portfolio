@@ -232,23 +232,35 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ question })
                 });
-                
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
+
+                let data;
+                try {
+                    data = await res.json();
+                } catch (e) {
+                    data = {};
                 }
-                
-                const data = await res.json();
+
                 removeTypingIndicator();
-                appendMessage(false, data.answer || 'Sorry, I could not process your request.');
+                if (res.status === 403 && data.error) {
+                    appendMessage(false, `<span style='color:#d00;font-weight:bold;'>🚫 ${data.error}</span>`);
+                    userInput.disabled = true;
+                    sendButton.disabled = true;
+                } else if (!res.ok) {
+                    appendMessage(false, '❌ Network error. Please check your connection and try again.');
+                } else {
+                    appendMessage(false, data.answer || 'Sorry, I could not process your request.');
+                }
             } catch (err) {
                 console.error('Error:', err);
                 removeTypingIndicator();
                 appendMessage(false, '❌ Network error. Please check your connection and try again.');
             } finally {
-                // Re-enable input
-                userInput.disabled = false;
-                sendButton.disabled = false;
-                userInput.focus();
+                // Re-enable input only if not blocked
+                if (!userInput.disabled) {
+                    userInput.disabled = false;
+                    sendButton.disabled = false;
+                    userInput.focus();
+                }
             }
         });
 
