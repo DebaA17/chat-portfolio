@@ -140,6 +140,9 @@
         <div class="chat-header">
             <h1>🤖 AI Chatbot</h1>
             <p>Ask me about Debasis or any general questions!</p>
+            <div id="user-meta" style="margin-top:12px;font-size:13px;color:#222;background:rgba(255,255,255,0.7);border-radius:8px;padding:8px 16px;display:inline-block;box-shadow:0 2px 8px #eee;">
+                <span id="meta-ip">IP: Detecting...</span> | <span id="meta-browser">Browser: Detecting...</span> | <span id="meta-os">OS: Detecting...</span>
+            </div>
         </div>
         <div class="chat-log" id="chat-log">
             <div class="chat-message bot-message">
@@ -244,6 +247,36 @@
 
         // Focus on input when page loads
         userInput.focus();
+
+        // User meta info
+        function getOS() {
+            const ua = navigator.userAgent;
+            if (ua.indexOf('Win') !== -1) return 'Windows';
+            if (ua.indexOf('Mac') !== -1) return 'MacOS';
+            if (ua.indexOf('Linux') !== -1) return 'Linux';
+            if (ua.indexOf('Android') !== -1) return 'Android';
+            if (ua.indexOf('like Mac') !== -1) return 'iOS';
+            return 'Unknown';
+        }
+        function getBrowser() {
+            const ua = navigator.userAgent;
+            if (ua.indexOf('Firefox') !== -1) return 'Firefox';
+            if (ua.indexOf('Edg') !== -1) return 'Edge';
+            if (ua.indexOf('Chrome') !== -1) return 'Chrome';
+            if (ua.indexOf('Safari') !== -1) return 'Safari';
+            if (ua.indexOf('Opera') !== -1 || ua.indexOf('OPR') !== -1) return 'Opera';
+            return 'Unknown';
+        }
+        document.getElementById('meta-os').textContent = 'OS: ' + getOS();
+        document.getElementById('meta-browser').textContent = 'Browser: ' + getBrowser();
+        fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('meta-ip').textContent = 'IP: ' + data.ip;
+            })
+            .catch(() => {
+                document.getElementById('meta-ip').textContent = 'IP: Unavailable';
+            });
     </script>
 </body>
 </html>
