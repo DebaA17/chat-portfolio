@@ -255,8 +255,8 @@
                 removeTypingIndicator();
                 appendMessage(false, '❌ Network error. Please check your connection and try again.');
             } finally {
-                // Re-enable input only if not blocked
-                if (!userInput.disabled) {
+                // Always re-enable input unless user is blocked
+                if (!(userInput.disabled && sendButton.disabled)) {
                     userInput.disabled = false;
                     sendButton.disabled = false;
                     userInput.focus();
@@ -264,7 +264,6 @@
             }
         });
 
-        // Focus on input when page loads
         userInput.focus();
 
         // User meta info
