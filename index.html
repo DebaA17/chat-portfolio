@@ -247,20 +247,22 @@
                     sendButton.disabled = true;
                 } else if (!res.ok) {
                     appendMessage(false, '❌ Network error. Please check your connection and try again.');
+                    userInput.disabled = false;
+                    sendButton.disabled = false;
+                    userInput.focus();
                 } else {
                     appendMessage(false, data.answer || 'Sorry, I could not process your request.');
+                    userInput.disabled = false;
+                    sendButton.disabled = false;
+                    userInput.focus();
                 }
             } catch (err) {
                 console.error('Error:', err);
                 removeTypingIndicator();
                 appendMessage(false, '❌ Network error. Please check your connection and try again.');
-            } finally {
-                // Always re-enable input unless user is blocked
-                if (!(userInput.disabled && sendButton.disabled)) {
-                    userInput.disabled = false;
-                    sendButton.disabled = false;
-                    userInput.focus();
-                }
+                userInput.disabled = false;
+                sendButton.disabled = false;
+                userInput.focus();
             }
         });
 
