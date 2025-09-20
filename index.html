@@ -177,9 +177,12 @@
             messageDiv.className = `chat-message ${isUser ? 'user-message' : 'bot-message'}`;
             
             const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.innerHTML = text;
-            
+            contentDiv.className = 'message-content'; 
+            if (isUser) { 
+                contentDiv.textContent = text;
+            } else {
+                contentDiv.innerHTML = text;
+            }            
             messageDiv.appendChild(contentDiv);
             chatLog.appendChild(messageDiv);
             chatLog.scrollTop = chatLog.scrollHeight;
