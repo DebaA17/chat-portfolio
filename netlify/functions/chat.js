@@ -33,6 +33,18 @@ function sanitize(str) {
         .replace(/'/g, '&#39;');
 }
 
+function processGeminiResponse(text) {
+    let processedText = sanitize(text);
+    
+    processedText = processedText
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+        .replace(/\*(.*?)\*/g, '<em>$1</em>') 
+        .replace(/\n\n/g, '<br><br>') 
+        .replace(/\n/g, '<br>'); 
+    
+    return processedText;
+}
+
 const aboutMe = {
     name: "Debasis",
     bio: "Full Stack Developer passionate about building scalable web applications.",
@@ -130,11 +142,14 @@ exports.handler = async (event, context) => {
 
         let answer = '';
         if (isAboutOwner(question)) {
-            answer = `Name: ${sanitize(aboutMe.name)}<br>Bio: ${sanitize(aboutMe.bio)}<br>Skills: ${sanitize(aboutMe.skills.join(', '))}<br>Projects:<br>` +
-                aboutMe.projects.map(p => `- ${sanitize(p.name)}: ${sanitize(p.description)}`).join('<br>');
+            answer = `<strong>Name:</strong> ${sanitize(aboutMe.name)}<br><br>` +
+                `<strong>Bio:</strong> ${sanitize(aboutMe.bio)}<br><br>` +
+                `<strong>Skills:</strong> ${sanitize(aboutMe.skills.join(', '))}<br><br>` +
+                `<strong>Projects:</strong><br>` +
+                aboutMe.projects.map(p => `• <strong>${sanitize(p.name)}:</strong> ${sanitize(p.description)}`).join('<br>');
         } else {
-            answer = await askGemini(question);
-            answer = sanitize(answer);
+            const rawAnswer = await askGemini(question);
+            answer = processGeminiResponse(rawAnswer);
         }
         return {
             statusCode: 200,
