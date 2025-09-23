@@ -77,6 +77,14 @@
             border: 1px solid #e1e5e9;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        .bot-message .message-content strong {
+            color: #4facfe;
+            font-weight: 600;
+        }
+        .bot-message .message-content em {
+            font-style: italic;
+            color: #666;
+        }
         .input-container { 
             padding: 20px; 
             background: white;
@@ -181,7 +189,13 @@
             if (isUser) { 
                 contentDiv.textContent = text;
             } else {
-                contentDiv.textContent = text;
+                // For bot messages, check if text contains ANY HTML tags
+                const hasHTMLTags = /<[^>]*>/g.test(text);
+                if (hasHTMLTags) {
+                    contentDiv.innerHTML = text;
+                } else {
+                    contentDiv.textContent = text;
+                }
             }            
             messageDiv.appendChild(contentDiv);
             chatLog.appendChild(messageDiv);
