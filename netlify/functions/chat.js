@@ -48,17 +48,24 @@ function processGeminiResponse(text) {
 const aboutMe = {
     name: "Debasis",
     bio: "Full Stack Developer passionate about building scalable web applications.",
+    email: "contact@debasisbiswas.me",
+    github: "https://github.com/DebaA17",
     skills: ["JavaScript", "Node.js", "React", "HTML", "CSS", "Python", "Bash", "VAPT", "Bug bounty"],
     projects: [
         { name: "Chatbot", description: "A domain-specific chatbot using Gemini API." },
-        { name: "Portfolio", description: "Personal portfolio website." }
+        { name: "Portfolio", description: "Personal portfolio website." },
+        { name: "passgen", description: "Instantly check password strength and generate secure passwords with customizable options" },
+        { name: "Phishing-url-checker", description: "This project uses the VirusTotal API to scan and analyze URLs for phishing and malicious content." },
+        { name: "Weather Dashboard", description: "Real-time weather application with location-based forecasts." },
+        { name: "Juicy finder", description: "." }
     ]
 };
 
 function isAboutOwner(question) {
     const keywords = [
         'owner', 'your name', 'who are you', 'about you', 'bio', 'skills', 'projects',
-        aboutMe.name.toLowerCase(), 'developer', 'portfolio', 'what can you do', 'tell me about yourself'
+        aboutMe.name.toLowerCase(), 'developer', 'portfolio', 'what can you do', 'tell me about yourself',
+        'email', 'contact', 'github', 'repository', 'social'
     ];
     const q = question.toLowerCase();
     return keywords.some(k => q.includes(k));
@@ -144,6 +151,8 @@ exports.handler = async (event, context) => {
         if (isAboutOwner(question)) {
             answer = `<strong>Name:</strong> ${sanitize(aboutMe.name)}<br><br>` +
                 `<strong>Bio:</strong> ${sanitize(aboutMe.bio)}<br><br>` +
+                `<strong>Email:</strong> <a href="mailto:${sanitize(aboutMe.email)}" style="color: #4facfe; text-decoration: none;">${sanitize(aboutMe.email)}</a><br><br>` +
+                `<strong>GitHub:</strong> <a href="${sanitize(aboutMe.github)}" target="_blank" style="color: #4facfe; text-decoration: none;">${sanitize(aboutMe.github)}</a><br><br>` +
                 `<strong>Skills:</strong> ${sanitize(aboutMe.skills.join(', '))}<br><br>` +
                 `<strong>Projects:</strong><br>` +
                 aboutMe.projects.map(p => `• <strong>${sanitize(p.name)}:</strong> ${sanitize(p.description)}`).join('<br>');
