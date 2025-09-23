@@ -8,10 +8,16 @@ const PORT = process.env.PORT || 3000;
 const aboutMe = {
     name: "Debasis",
     bio: "Full Stack Developer passionate about building scalable web applications.",
-    skills: ["JavaScript", "Node.js", "React", "Linux", "DevOps", "Python"],
+    email: "contact@debasisbiswas.me",
+    github: "https://github.com/DebaA17",
+    skills: ["JavaScript", "Node.js", "React", "HTML", "CSS", "Python", "Bash", "VAPT", "Bug bounty"],
     projects: [
-        { name: "Chatbot", description: "A domain-specific chatbot." },
-        { name: "Portfolio", description: "Personal portfolio website." }
+        { name: "Chatbot", description: "A domain-specific chatbot using Gemini API." },
+        { name: "Portfolio", description: "Personal portfolio website." },
+        { name: "E-commerce Platform", description: "Full-stack e-commerce solution with React and Node.js." },
+        { name: "Task Management App", description: "Productivity app with real-time collaboration features." },
+        { name: "Weather Dashboard", description: "Real-time weather application with location-based forecasts." },
+        { name: "Bug Bounty Tools", description: "Custom security testing and vulnerability assessment tools." }
     ]
 };
 
@@ -21,7 +27,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 function isAboutOwner(question) {
     const keywords = [
         'owner', 'your name', 'who are you', 'about you', 'bio', 'skills', 'projects',
-        aboutMe.name.toLowerCase(), 'developer', 'portfolio', 'what can you do', 'tell me about yourself'
+        aboutMe.name.toLowerCase(), 'developer', 'portfolio', 'what can you do', 'tell me about yourself',
+        'email', 'contact', 'github', 'repository', 'social'
     ];
     const q = question.toLowerCase();
     return keywords.some(k => q.includes(k));
@@ -62,8 +69,13 @@ app.post('/api/chat', async (req, res) => {
     let answer = '';
     
     if (isAboutOwner(question)) {
-        answer = `Name: ${aboutMe.name}<br>Bio: ${aboutMe.bio}<br>Skills: ${aboutMe.skills.join(', ')}<br>Projects:<br>` +
-            aboutMe.projects.map(p => `- ${p.name}: ${p.description}`).join('<br>');
+        answer = `<strong>Name:</strong> ${aboutMe.name}<br><br>` +
+            `<strong>Bio:</strong> ${aboutMe.bio}<br><br>` +
+            `<strong>Email:</strong> <a href="mailto:${aboutMe.email}" style="color: #4facfe; text-decoration: none;">${aboutMe.email}</a><br><br>` +
+            `<strong>GitHub:</strong> <a href="${aboutMe.github}" target="_blank" style="color: #4facfe; text-decoration: none;">${aboutMe.github}</a><br><br>` +
+            `<strong>Skills:</strong> ${aboutMe.skills.join(', ')}<br><br>` +
+            `<strong>Projects:</strong><br>` +
+            aboutMe.projects.map(p => `• <strong>${p.name}:</strong> ${p.description}`).join('<br>');
     } else {
         answer = await askGemini(question);
     }

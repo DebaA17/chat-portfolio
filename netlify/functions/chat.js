@@ -46,7 +46,7 @@ function processGeminiResponse(text) {
 }
 
 const aboutMe = {
-    name: "Debasis",
+    name: "Debasis Biswas",
     bio: "Full Stack Developer passionate about building scalable web applications.",
     email: "contact@debasisbiswas.me",
     github: "https://github.com/DebaA17",
@@ -57,7 +57,7 @@ const aboutMe = {
         { name: "passgen", description: "Instantly check password strength and generate secure passwords with customizable options" },
         { name: "Phishing-url-checker", description: "This project uses the VirusTotal API to scan and analyze URLs for phishing and malicious content." },
         { name: "Weather Dashboard", description: "Real-time weather application with location-based forecasts." },
-        { name: "Juicy finder", description: "." }
+        { name: "Juicy finder", description: "Shell script to help you find juicy files on Linux systems." }
     ]
 };
 
