@@ -89,14 +89,19 @@ async function askGemini(prompt) {
             body: JSON.stringify(body)
         });
         const data = await res.json();
-        
+        if (!res.ok) {
+            console.error('Gemini API HTTP error:', res.status, data);
+            return `Gemini API error: ${data.error?.message || res.statusText}`;
+        }
         if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
             return data.candidates[0].content.parts[0].text;
         }
-        return "Sorry, I couldn't get a response from Gemini.";
+        // Log the full response for debugging if structure is unexpected
+        console.error('Unexpected Gemini API response:', JSON.stringify(data));
+        return `Sorry, I couldn't get a response from Gemini. [Debug: ${JSON.stringify(data)}]`;
     } catch (error) {
         console.error('Gemini API error:', error);
-        return "Sorry, there was an error connecting to Gemini.";
+        return `Sorry, there was an error connecting to Gemini. [${error.message}]`;
     }
 }
 
