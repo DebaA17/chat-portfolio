@@ -177,10 +177,9 @@
             </div>
         </div>
         <div class="input-container">
-            <form id="chat-form" class="input-row">
-                <input type="text" id="user-input" placeholder="Type your question here..." autocomplete="off" required />
-                <button type="submit" id="send-button">Send</button>
-            </form>
+            <div style="text-align:center; color:#b71c1c; font-weight:bold; font-size:16px; padding:24px 0;">
+                🚧 This chatbot is currently under development or temporarily unavailable.<br>Please check back later!
+            </div>
         </div>
     </div>
 
@@ -240,60 +239,7 @@
             }
         }
 
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const question = userInput.value.trim();
-            if (!question) return;
 
-            // Disable input while processing
-            userInput.disabled = true;
-            sendButton.disabled = true;
-            
-            appendMessage(true, question);
-            userInput.value = '';
-            showTypingIndicator();
-
-            try {
-                const res = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question })
-                });
-
-                let data;
-                try {
-                    data = await res.json();
-                } catch (e) {
-                    data = {};
-                }
-
-                removeTypingIndicator();
-                if (res.status === 403 && data.error) {
-                    appendMessage(false, `<span style='color:#d00;font-weight:bold;'>🚫 ${data.error}</span>`);
-                    userInput.disabled = true;
-                    sendButton.disabled = true;
-                } else if (!res.ok) {
-                    appendMessage(false, '❌ Network error. Please check your connection and try again.');
-                    userInput.disabled = false;
-                    sendButton.disabled = false;
-                    userInput.focus();
-                } else {
-                    appendMessage(false, data.answer || 'Sorry, I could not process your request.');
-                    userInput.disabled = false;
-                    sendButton.disabled = false;
-                    userInput.focus();
-                }
-            } catch (err) {
-                console.error('Error:', err);
-                removeTypingIndicator();
-                appendMessage(false, '❌ Network error. Please check your connection and try again.');
-                userInput.disabled = false;
-                sendButton.disabled = false;
-                userInput.focus();
-            }
-        });
-
-        userInput.focus();
 
         // User meta info
         function getOS() {
