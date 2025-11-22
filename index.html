@@ -161,10 +161,30 @@
     </style>
 </head>
 <body>
+    <script>
+        let seconds = 3;
+        function updateCountdown() {
+            const el = document.getElementById('redirect-countdown');
+            if (el) el.textContent = seconds;
+        }
+        function startCountdown() {
+            updateCountdown();
+            const interval = setInterval(function() {
+                seconds--;
+                updateCountdown();
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    window.location.href = "https://chatgpt.com/g/g-690e05134b88819198752ab1b945e2b8-debasis-chatbot";
+                }
+            }, 1000);
+        }
+        window.onload = startCountdown;
+    </script>
     <div class="chat-container">
         <div class="chat-header">
             <h1>🤖 AI Chatbot</h1>
-            <p style="color:#b71c1c;font-weight:bold;font-size:16px;">This chatbot is currently under development or temporarily unavailable.<br>Please check back later!</p>
+            <p style="color:#b71c1c;font-weight:bold;font-size:16px;">This chatbot is currently under development or temporarily unavailable.<br>
+            You are being redirected in <span id="redirect-countdown">3</span> seconds...</p>
             <div id="user-meta" style="margin-top:12px;font-size:13px;color:#222;background:rgba(255,255,255,0.7);border-radius:8px;padding:8px 16px;display:inline-block;box-shadow:0 2px 8px #eee;">
                 <span id="meta-ip">IP: Detecting...</span> | <span id="meta-browser">Browser: Detecting...</span> | <span id="meta-os">OS: Detecting...</span>
             </div>
